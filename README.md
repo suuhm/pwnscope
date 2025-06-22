@@ -1,9 +1,9 @@
 # pwnscope
 
-![grafik](https://github.com/user-attachments/assets/a7d2a5b1-f674-4ace-8f57-3d452def5108)
+![grafik](https://github.com/user-attachments/assets/36d0ef20-da06-463b-a16e-dd0867944c78)
 
 
-**pwnscope.sh** is a lightweight Linux reconnaissance and minimal exploit toolkit script designed to help security professionals quickly gather system information and perform basic exploitation.
+**pwnscope** is a lightweight Linux and Windows reconnaissance and minimal exploit toolkit script designed to help security professionals quickly gather system information and perform basic exploitation.
 It's designed to run smarter and faster than other recon scripts yet. So just give it a try!
 
 ---
@@ -18,14 +18,19 @@ It's designed to run smarter and faster than other recon scripts yet. So just gi
 
 ## Requirements
 
+### Linux OS
 * Bash or compatible shell (works with `/bin/bash`, `/bin/sh`, `ash`, etc.)
 * Linux environment
 * `sudo` privileges for some extended checks (optional)
 * Basic utilities like `find`, `ps`, `ss`, `ip`, `free`, `df`, `getcap`
 
+### Windows OS
+* Admin rights
+* Powershell exec bypass
+
 ---
 
-## Usage
+## Usage Linux (Windows same with *.ps1 extension instead)
 
 ```bash
 # Display help and usage
