@@ -1,4 +1,7 @@
-# pwnscope.sh
+# pwnscope
+
+![grafik](https://github.com/user-attachments/assets/a7d2a5b1-f674-4ace-8f57-3d452def5108)
+
 
 **pwnscope.sh** is a lightweight Linux reconnaissance and minimal exploit toolkit script designed to help security professionals quickly gather system information and perform basic exploitation.
 It's designed to run smarter and faster than other recon scripts yet. So just give it a try!
