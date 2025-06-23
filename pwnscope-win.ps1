@@ -101,12 +101,9 @@ function Start-ReverseShell {
 
 Show-ASCIIHeader
 
-param (
-    [Parameter(Position=0, Mandatory=$false)]
-    [string]$Mode
-)
+$Mode = $args[0] # 
 
-switch ($args[0]) {
+switch ($Mode) {
     '--short'   { Short-Report }
     '--full'    { Full-Report }
     '--exploit' { Start-ReverseShell }
